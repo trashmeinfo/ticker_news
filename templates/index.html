@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>NSE Stock News Summarizer</title>
+  <style>
+    body { font-family: -apple-system, Segoe UI, sans-serif; max-width: 680px; margin: 60px auto; padding: 0 20px; color: #1a1a1a; }
+    h1 { font-size: 1.4rem; margin-bottom: 4px; }
+    p.sub { color: #666; margin-top: 0; }
+    form { display: flex; gap: 8px; margin: 24px 0; }
+    input[type=text] { flex: 1; padding: 10px 12px; font-size: 1rem; border: 1px solid #ccc; border-radius: 6px; text-transform: uppercase; }
+    button { padding: 10px 18px; font-size: 1rem; border: none; border-radius: 6px; background: #1a1a1a; color: white; cursor: pointer; }
+    button:hover { background: #333; }
+    .error { color: #b00020; margin-top: 12px; }
+    .result { margin-top: 28px; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px; background: #fafafa; }
+    .result h2 { margin-top: 0; font-size: 1.1rem; }
+    .summary { font-size: 1.02rem; line-height: 1.55; white-space: pre-line; }
+    .sources { margin-top: 20px; font-size: 0.85rem; color: #555; }
+    .sources a { color: #444; }
+    .tag { font-size: 0.7rem; padding: 1px 6px; border-radius: 4px; background: #eee; margin-left: 6px; }
+  </style>
+</head>
+<body>
+  <h1>NSE Stock News Summarizer</h1>
+  <p class="sub">Enter an NSE ticker (e.g. TCS, RELIANCE, INFY) for a crux news summary.</p>
+
+  <form action="/summarize" method="POST">
+    <input type="text" name="ticker" placeholder="e.g. TCS" value="{{ ticker }}" required autofocus />
+    <button type="submit">Summarize</button>
+  </form>
+
+  {% if error %}
+    <p class="error">{{ error }}</p>
+  {% endif %}
+
+  {% if result %}
+    <div class="result">
+      <h2>{{ result.company_name }} ({{ result.ticker }})</h2>
+      <div class="summary">{{ result.summary }}</div>
+
+      {% if result.sources %}
+      <div class="sources">
+        <strong>Sources checked:</strong>
+        <ul>
+          {% for s in result.sources %}
+            <li>
+              <a href="{{ s.link }}" target="_blank" rel="noopener">{{ s.title }}</a>
+              <span class="tag">{{ 'full text' if s.source_quality == 'full_article' else 'snippet only' }}</span>
+            </li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+    </div>
+  {% endif %}
+</body>
+</html>
