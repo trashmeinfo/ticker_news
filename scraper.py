@@ -50,7 +50,7 @@ SOURCE_SITES = [
 ]
 
 REQUEST_TIMEOUT_SECONDS = 8
-MAX_ARTICLES = 5
+MAX_ARTICLES = 3
 MAX_RESPONSE_BYTES = 2_000_000  # skip full-text parsing on unusually large pages
 
 

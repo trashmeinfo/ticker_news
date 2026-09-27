@@ -3,5 +3,5 @@ gunicorn==22.0.0
 requests==2.32.3
 feedparser==6.0.11
 trafilatura==1.12.2
-google-generativeai==0.8.3
+google-genai==2.25.0
 googlenewsdecoder==0.2.1
