@@ -50,7 +50,8 @@ SOURCE_SITES = [
 ]
 
 REQUEST_TIMEOUT_SECONDS = 8
-MAX_ARTICLES = 8
+MAX_ARTICLES = 5
+MAX_RESPONSE_BYTES = 2_000_000  # skip full-text parsing on unusually large pages
 
 
 def build_google_news_rss_url(company_name: str, ticker: str) -> str:
@@ -126,10 +127,19 @@ def fetch_full_text(url: str) -> str | None:
             headers={"User-Agent": USER_AGENT},
             timeout=REQUEST_TIMEOUT_SECONDS,
             allow_redirects=True,
+            stream=True,
         )
-        if resp.status_code != 200 or not resp.text:
+        if resp.status_code != 200:
             return None
-        text = trafilatura.extract(resp.text, include_comments=False, include_tables=False)
+
+        # Read only up to MAX_RESPONSE_BYTES to avoid a single huge page
+        # blowing up memory on a constrained (e.g. free-tier) host.
+        content = resp.raw.read(MAX_RESPONSE_BYTES + 1, decode_content=True)
+        if len(content) > MAX_RESPONSE_BYTES:
+            return None  # page too large -- skip, fall back to snippet
+        html = content.decode(resp.encoding or "utf-8", errors="ignore")
+
+        text = trafilatura.extract(html, include_comments=False, include_tables=False)
         return text.strip() if text else None
     except Exception:
         return None
