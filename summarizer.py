@@ -7,7 +7,7 @@ import os
 
 import google.generativeai as genai
 
-MODEL_NAME = "gemini-2.0-flash"
+MODEL_NAME = "gemini-3.8-flash"
 
 PROMPT_TEMPLATE = """You are a sharp equity research analyst briefing a busy portfolio manager.
 
