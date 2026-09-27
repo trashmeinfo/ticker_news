@@ -22,11 +22,10 @@ def summarize_ticker():
 
     company_name = get_company_name(ticker)
     if not company_name:
-        error = (
-            f"Couldn't resolve '{ticker}' as an NSE-listed company. "
-            "Double-check the symbol (e.g. TCS, RELIANCE, INFY)."
-        )
-        return render_template("index.html", result=None, error=error, ticker=raw_ticker)
+        # Name lookup failed (timeout, rate-limit, or genuinely unknown
+        # ticker) -- don't hard-block the user, just search using the raw
+        # symbol instead. Slightly less precise, but keeps the app working.
+        company_name = ticker
 
     articles = gather_content_for_ticker(company_name, ticker)
     summary_text = summarize(company_name, ticker, articles)
